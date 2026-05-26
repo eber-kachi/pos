@@ -1661,6 +1661,10 @@ class Util
                 }
             }
         }
+        
+        if(Auth::user()->language!='en'){
+            $user_details['language'] = Auth::user()->language;
+        }
 
         //Create the user
         $user = User::create($user_details);
