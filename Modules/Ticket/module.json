@@ -1,0 +1,14 @@
+{
+    "name": "Ticket",
+    "alias": "ticket",
+    "description": "Módulo de Soporte/Tickets",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\Ticket\\Providers\\TicketServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
