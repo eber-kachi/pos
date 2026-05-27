@@ -16,7 +16,7 @@ class SuperadminTicketController extends Controller
     public function index()
     {
         $statuses = TicketStatus::get();
-        $agents = [];//User::permission('superadmin')->get();
+        $agents = User::role('dev#1')->get();
 
         $tickets = Ticket::with([
             'status',
@@ -45,7 +45,7 @@ class SuperadminTicketController extends Controller
             ->findOrFail($id);
 
         $statuses = TicketStatus::get();
-        $agents = [];//User::permission('superadmin')->get();
+        $agents = User::role('dev#1')->get();
 
         return view('ticket::superadmin.show')
             ->with(compact('ticket', 'statuses', 'agents'));
