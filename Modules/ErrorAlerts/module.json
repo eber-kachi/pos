@@ -1,0 +1,14 @@
+{
+    "name": "ErrorAlerts",
+    "alias": "erroralerts",
+    "description": "Alertas de errores por correo, con etiquetas y anti-flood. Se envia despues de responder al usuario.",
+    "keywords": ["errors", "monitoring", "alerts", "mail"],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\ErrorAlerts\\Providers\\ErrorAlertsServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
