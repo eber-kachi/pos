@@ -20,5 +20,7 @@
     "CustomDashboard": true,
     "Gym": true,
     "ZatcaIntegrationKsa": true,
-    "Ticket": true
+    "Ticket": true,
+    "ErrorAlert": true
+
 }

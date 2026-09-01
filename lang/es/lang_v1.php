@@ -1430,5 +1430,6 @@ return [
     'show_previous_balance_due' => 'Mostrar saldo anterior adeudado',
     'view_own_purchase' => 'Ver compras propias',
     'view_all_purchase' => 'Ver todas las compras',
+    'payment_option_help' => 'Habilitar o deshabilitar métodos de pago para la ubicación',
 ];
 
