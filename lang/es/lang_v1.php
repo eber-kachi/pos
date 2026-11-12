@@ -1095,7 +1095,7 @@ return [
     'classic' => 'Klassisch',
     'elegant' => 'Elegant',
     'slim' => 'Schlank',
-    'detailed' => 'Detailliert',
+    'detailed' => 'Detallado',
     'columnize_taxes' => 'Steuern kolumnisieren',
     'types_of_service_help_long' => 'Tipo de servicio significa servicios como cena, paquetería, entrega a domicilio, entrega a terceros, etc. Se puede habilitar / deshabilitar desde <code> Configuración> Módulos </code> y se puede crear desde <code> Configuración> Tipos de servicio </code>. También puede definir diferentes grupos de precios y cargos por empaque para los tipos de servicios.',
     'access_sell_return' => 'Acceder a la devolución de la venta',

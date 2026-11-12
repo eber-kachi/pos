@@ -2,7 +2,7 @@
     $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'] : 'other';
 @endphp
 <div class="pos-tab-content">
-    <div class="row">
+    <div class="row sms-settings-row">
         <div class="col-xs-3">
             <div class="form-group">
                 {!! Form::label('sms_service', __('lang_v1.sms_service') . ':') !!}
@@ -10,7 +10,7 @@
             </div>
         </div>
     </div>
-    <div class="row sms_service_settings @if($sms_service != 'nexmo') hide @endif" data-service="nexmo">
+    <div class="row sms-settings-row sms_service_settings @if($sms_service != 'nexmo') hide @endif" data-service="nexmo">
         <div class="col-xs-3">
             <div class="form-group">
                 {!! Form::label('nexmo_key', __('lang_v1.nexmo_key') . ':') !!}
@@ -30,7 +30,7 @@
             </div>
         </div>
     </div>
-    <div class="row sms_service_settings @if($sms_service != 'twilio') hide @endif" data-service="twilio">
+    <div class="row sms-settings-row sms_service_settings @if($sms_service != 'twilio') hide @endif" data-service="twilio">
         <div class="col-xs-3">
             <div class="form-group">
                 {!! Form::label('twilio_sid', __('lang_v1.twilio_sid') . ':') !!}
@@ -50,14 +50,14 @@
             </div>
         </div>
     </div>
-    <div class="row sms_service_settings @if($sms_service != 'other') hide @endif" data-service="other">
-        <div class="col-xs-4">
+    <div class="row sms-settings-row sms_service_settings @if($sms_service != 'other') hide @endif" data-service="other">
+        <div class="col-xs-4 col-sm-6">
             <div class="form-group">
             	{!! Form::label('sms_settings_url', 'URL:') !!}
             	{!! Form::text('sms_settings[url]', $sms_settings['url'], ['class' => 'form-control','placeholder' => 'URL', 'id' => 'sms_settings_url']); !!}
             </div>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-12 col-sm-4">
             <div class="form-group">
                 {!! Form::label('send_to_param_name', __('lang_v1.send_to_param_name') . ':') !!}
                 <div class="input-group">

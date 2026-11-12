@@ -45,7 +45,7 @@
         <div class="col-sm-12">
             @component('components.widget', ['title' => __('report.summary')])
                 <h3 class="text-muted">
-                    {{ __('report.total_sell') }} - {{ __('lang_v1.total_sales_return') }}: 
+                    {{ __('report.total_sell') }} - {{ __('lang_v1.total_sales_return') }}: <br class="visible-xs">
                     <span id="sr_total_sales">
                         <i class="fas fa-sync fa-spin fa-fw"></i>
                     </span>
