@@ -49,6 +49,42 @@ class SetSessionData
             $request->session()->put('financial_year', $financial_year);
         }
 
+        // Cache the assigned type configuration so product forms and other views
+        // can reuse it without querying the feature table for every field.
+        $business = $request->session()->get('business');
+        $feature_visibility = null;
+        if ($business) {
+            $business_type_id = \Illuminate\Support\Facades\Cache::remember(
+                'business_type_for_business_'.$business->id,
+                now()->addHours(12),
+                function () use ($business) {
+                    return (int) (Business::whereKey($business->id)->value('business_type_id') ?? 0);
+                }
+            );
+            $business->business_type_id = $business_type_id ?: null;
+        }
+        if ($business && ! empty($business->business_type_id)) {
+            $feature_visibility = \Illuminate\Support\Facades\Cache::remember(
+                'business_type_features_'.$business->business_type_id,
+                now()->addHours(12),
+                function () use ($business) {
+                    return \App\BusinessTypeFeature::where('business_type_id', $business->business_type_id)
+                        ->get()->keyBy('feature_key')->map(function ($feature) {
+                            return [
+                                'is_enabled' => (bool) $feature->is_enabled,
+                                'hidden_columns' => $feature->hidden_columns ?? [],
+                                'hide_in_reports' => (bool) $feature->hide_in_reports,
+                                'hide_in_datatables' => (bool) $feature->hide_in_datatables,
+                            ];
+                        })->toArray();
+                }
+            );
+        }
+        $request->session()->put('business_type_features', $feature_visibility);
+        if ($business) {
+            $request->session()->put('business', $business);
+        }
+
         return $next($request);
     }
 }

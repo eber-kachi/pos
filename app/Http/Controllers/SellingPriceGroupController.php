@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\SellingPriceGroup;
+use App\Exports\ProductPricesExport;
 use App\Utils\Util;
 use App\Variation;
 use App\VariationGroupPrice;
@@ -241,43 +242,7 @@ class SellingPriceGroupController extends Controller
     public function export()
     {
         $business_id = request()->user()->business_id;
-        $price_groups = SellingPriceGroup::where('business_id', $business_id)->active()->get();
-
-        $variations = Variation::join('products as p', 'variations.product_id', '=', 'p.id')
-                            ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
-                            ->where('p.business_id', $business_id)
-                            ->whereIn('p.type', ['single', 'variable'])
-                            ->select('sub_sku', 'p.name as product_name', 'variations.name as variation_name', 'p.type', 'variations.id', 'pv.name as product_variation_name', 'sell_price_inc_tax')
-                            ->with(['group_prices'])
-                            ->get();
-        $export_data = [];
-        foreach ($variations as $variation) {
-            $temp = [];
-            $temp['product'] = $variation->type == 'single' ? $variation->product_name : $variation->product_name.' - '.$variation->product_variation_name.' - '.$variation->variation_name;
-            $temp['sku'] = $variation->sub_sku;
-            $temp['Selling Price Including Tax'] = $variation->sell_price_inc_tax;
-
-            foreach ($price_groups as $price_group) {
-                $price_group_id = $price_group->id;
-                $variation_pg = $variation->group_prices->filter(function ($item) use ($price_group_id) {
-                    return $item->price_group_id == $price_group_id;
-                });
-
-                $temp[$price_group->name] = $variation_pg->isNotEmpty() ? $variation_pg->first()->price_inc_tax : '';
-            }
-            $export_data[] = $temp;
-        }
-
-        if (ob_get_contents()) {
-            ob_end_clean();
-        }
-        ob_start();
-
-        return collect($export_data)->downloadExcel(
-            'product_prices.xlsx',
-            null,
-            true
-        );
+        return Excel::download(new ProductPricesExport($business_id), 'product_prices.xlsx');
     }
 
     /**
@@ -294,103 +259,114 @@ class SellingPriceGroupController extends Controller
                 return $notAllowed;
             }
 
-            //Set maximum php execution time
             ini_set('max_execution_time', 0);
             ini_set('memory_limit', -1);
 
-            if ($request->hasFile('product_group_prices')) {
-                $file = $request->file('product_group_prices');
-
-                $parsed_array = Excel::toArray([], $file);
-
-                $headers = $parsed_array[0][0];
-
-                //Remove header row
-                $imported_data = array_splice($parsed_array[0], 1);
-
-                $business_id = $request->session()->get('user.business_id');
-                $price_groups = SellingPriceGroup::where('business_id', $business_id)->active()->get();
-
-                //Get price group names from headers
-                $imported_pgs = [];
-                foreach ($headers as $key => $value) {
-                    if (! empty($value) && $key > 2) {
-                        $imported_pgs[$key] = $value;
-                    }
-                }
-
-                $error_msg = '';
-                DB::beginTransaction();
-
-                foreach ($imported_data as $key => $value) {
-                    $variation = Variation::where('sub_sku', $value[1])
-                                        ->join('products', 'products.id', '=', 'variations.product_id')
-                                        ->where('products.business_id', $business_id)
-                                        ->select('variations.*')
-                                        ->first();
-                    if (empty($variation)) {
-                        $row = $key + 1;
-                        $error_msg = __('lang_v1.product_not_found_exception', ['sku' => $value[1], 'row' => $row]);
-
-                        throw new \Exception($error_msg);
-                    }
-
-                    //Check if product base price is changed
-                    if($variation->sell_price_inc_tax != $value[2]){
-                        //update price for base selling price, adjust default_sell_price, profit %
-                        $variation->sell_price_inc_tax = $value[2];
-                        $tax = $variation->product->product_tax()->get();
-                        $tax_percent = !empty($tax) && !empty($tax->first()) ? $tax->first()->amount : 0;
-                        $variation->default_sell_price = $this->commonUtil->calc_percentage_base($value[2], $tax_percent);
-                        $variation->profit_percent = $this->commonUtil
-                                        ->get_percent($variation->default_purchase_price, $variation->default_sell_price);
-                        $variation->update();
-                    }
-
-                    //update selling price
-                    foreach ($imported_pgs as $k => $v) {
-                        $price_group = $price_groups->filter(function ($item) use ($v) {
-                            return strtolower($item->name) == strtolower($v);
-                        });
-
-                        if ($price_group->isNotEmpty()) {
-                            //Check if price is numeric
-                            if (! is_null($value[$k]) && ! is_numeric($value[$k])) {
-                                $row = $key + 1;
-                                $error_msg = __('lang_v1.price_group_non_numeric_exception', ['row' => $row]);
-
-                                throw new \Exception($error_msg);
-                            }
-
-                            if (! is_null($value[$k])) {
-                                VariationGroupPrice::updateOrCreate(
-                                    ['variation_id' => $variation->id,
-                                        'price_group_id' => $price_group->first()->id,
-                                    ],
-                                    ['price_inc_tax' => $value[$k],
-                                    ]
-                                );
-                            }
-                        } else {
-                            $row = $key + 1;
-                            $error_msg = __('lang_v1.price_group_not_found_exception', ['pg' => $v, 'row' => $row]);
-
-                            throw new \Exception($error_msg);
-                        }
-                    }
-                }
-                DB::commit();
+            if (! $request->hasFile('product_group_prices')) {
+                throw new \Exception(__('lang_v1.product_price_file_required'));
             }
-            $output = ['success' => 1,
-                'msg' => __('lang_v1.product_prices_imported_successfully'),
-            ];
-        } catch (\Exception $e) {
-            DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
-            $output = ['success' => 0,
-                'msg' => $e->getMessage(),
-            ];
+            $parsedArray = Excel::toArray([], $request->file('product_group_prices'));
+            $sheet = $parsedArray[0] ?? [];
+            $headers = $sheet[0] ?? [];
+            if (empty($headers)) {
+                throw new \Exception(__('lang_v1.product_price_headers_invalid'));
+            }
+            $importedData = array_slice($sheet, 1);
+            $businessId = $request->session()->get('user.business_id');
+            $priceGroups = SellingPriceGroup::where('business_id', $businessId)->active()->get();
+
+            $normalize = function ($value) {
+                $value = preg_replace('/^\\xEF\\xBB\\xBF/', '', (string) $value);
+                return mb_strtolower(trim($value), 'UTF-8');
+            };
+            $headerIndexes = [];
+            foreach ($headers as $index => $header) {
+                $normalizedHeader = $normalize($header);
+                if ($normalizedHeader !== '') {
+                    $headerIndexes[$normalizedHeader] = $index;
+                }
+            }
+
+            $findHeader = function (array $aliases) use ($headerIndexes, $normalize) {
+                foreach ($aliases as $alias) {
+                    $normalizedAlias = $normalize($alias);
+                    if (array_key_exists($normalizedAlias, $headerIndexes)) {
+                        return $headerIndexes[$normalizedAlias];
+                    }
+                }
+                return null;
+            };
+            $productIndex = $findHeader([__('lang_v1.product_price_template_product'), 'Product', 'Producto']);
+            $skuIndex = $findHeader([__('lang_v1.product_price_template_sku'), 'SKU']);
+            $basePriceIndex = $findHeader([__('lang_v1.product_price_template_base_price'), 'Selling Price Including Tax', 'Precio de venta con impuestos', 'Precio de venta con impuesto']);
+            if ($productIndex === null || $skuIndex === null || $basePriceIndex === null) {
+                throw new \Exception(__('lang_v1.product_price_headers_invalid'));
+            }
+
+            $groupsByName = $priceGroups->keyBy(function ($group) use ($normalize) {
+                return $normalize($group->name);
+            });
+            $importedPriceGroups = [];
+            foreach ($headers as $index => $header) {
+                if (in_array($index, [$productIndex, $skuIndex, $basePriceIndex], true) || trim((string) $header) === '') {
+                    continue;
+                }
+                $priceGroup = $groupsByName->get($normalize($header));
+                if (! $priceGroup) {
+                    throw new \Exception(__('lang_v1.price_group_not_found_exception', ['pg' => $header, 'row' => 1]));
+                }
+                $importedPriceGroups[] = ['index' => $index, 'group' => $priceGroup];
+            }
+
+            DB::beginTransaction();
+            foreach ($importedData as $rowIndex => $rowData) {
+                $rowNumber = $rowIndex + 2;
+                $sku = $rowData[$skuIndex] ?? null;
+                $variation = Variation::where('sub_sku', $sku)
+                    ->join('products', 'products.id', '=', 'variations.product_id')
+                    ->where('products.business_id', $businessId)
+                    ->select('variations.*')
+                    ->first();
+                if (! $variation) {
+                    throw new \Exception(__('lang_v1.product_not_found_exception', ['sku' => $sku, 'row' => $rowNumber]));
+                }
+
+                $basePrice = $rowData[$basePriceIndex] ?? null;
+                if ($basePrice !== null && $basePrice !== '' && ! is_numeric($basePrice)) {
+                    throw new \Exception(__('lang_v1.price_group_non_numeric_exception', ['row' => $rowNumber]));
+                }
+                if ($basePrice !== null && $basePrice !== '' && (float) $variation->sell_price_inc_tax != (float) $basePrice) {
+                    $variation->sell_price_inc_tax = $basePrice;
+                    $tax = $variation->product->product_tax()->first();
+                    $taxPercent = $tax ? $tax->amount : 0;
+                    $variation->default_sell_price = $this->commonUtil->calc_percentage_base($basePrice, $taxPercent);
+                    $variation->profit_percent = $this->commonUtil->get_percent($variation->default_purchase_price, $variation->default_sell_price);
+                    $variation->update();
+                }
+
+                foreach ($importedPriceGroups as $priceGroupColumn) {
+                    $price = $rowData[$priceGroupColumn['index']] ?? null;
+                    if ($price !== null && $price !== '' && ! is_numeric($price)) {
+                        throw new \Exception(__('lang_v1.price_group_non_numeric_exception', ['row' => $rowNumber]));
+                    }
+                    if ($price !== null && $price !== '') {
+                        VariationGroupPrice::updateOrCreate(
+                            ['variation_id' => $variation->id, 'price_group_id' => $priceGroupColumn['group']->id],
+                            ['price_inc_tax' => $price]
+                        );
+                    }
+                }
+            }
+            DB::commit();
+
+            $output = ['success' => 1, 'msg' => __('lang_v1.product_prices_imported_successfully')];
+        } catch (\Exception $e) {
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            $output = ['success' => 0, 'msg' => $e->getMessage()];
 
             return redirect('update-product-price')->with('notification', $output);
         }

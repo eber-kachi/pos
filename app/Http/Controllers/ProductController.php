@@ -703,7 +703,10 @@ class ProductController extends Controller
             $product->sku = $product_details['sku'];
             $product->alert_quantity = ! empty($product_details['alert_quantity']) ? $this->productUtil->num_uf($product_details['alert_quantity']) : $product_details['alert_quantity'];
             $product->tax_type = $product_details['tax_type'];
-            $product->weight = $product_details['weight'];
+            $business_type_features = $request->session()->get('business_type_features');
+            if (is_null($business_type_features) || data_get($business_type_features, 'product_weight.is_enabled', true)) {
+                $product->weight = $product_details['weight'] ?? null;
+            }
             $product->product_custom_field1 = $product_details['product_custom_field1'] ?? '';
             $product->product_custom_field2 = $product_details['product_custom_field2'] ?? '';
             $product->product_custom_field3 = $product_details['product_custom_field3'] ?? '';
@@ -727,8 +730,12 @@ class ProductController extends Controller
 
             $product->product_description = $product_details['product_description'];
             $product->sub_unit_ids = ! empty($product_details['sub_unit_ids']) ? $product_details['sub_unit_ids'] : null;
-            $product->preparation_time_in_minutes = $product_details['preparation_time_in_minutes'];
-            $product->warranty_id = ! empty($request->input('warranty_id')) ? $request->input('warranty_id') : null;
+            if (is_null($business_type_features) || data_get($business_type_features, 'product_preparation_time.is_enabled', true)) {
+                $product->preparation_time_in_minutes = $product_details['preparation_time_in_minutes'] ?? null;
+            }
+            if (is_null($business_type_features) || data_get($business_type_features, 'warranties.is_enabled', true)) {
+                $product->warranty_id = ! empty($request->input('warranty_id')) ? $request->input('warranty_id') : null;
+            }
             $product->secondary_unit_id = ! empty($request->input('secondary_unit_id')) ? $request->input('secondary_unit_id') : null;
 
             if (! empty($request->input('enable_stock')) && $request->input('enable_stock') == 1) {
@@ -756,10 +763,8 @@ class ProductController extends Controller
                 }
             }
 
-            if (! empty($request->input('enable_sr_no')) && $request->input('enable_sr_no') == 1) {
-                $product->enable_sr_no = 1;
-            } else {
-                $product->enable_sr_no = 0;
+            if (is_null($business_type_features) || data_get($business_type_features, 'product_imei.is_enabled', true)) {
+                $product->enable_sr_no = (! empty($request->input('enable_sr_no')) && $request->input('enable_sr_no') == 1) ? 1 : 0;
             }
 
             //upload document

@@ -129,7 +129,7 @@
                 'placeholder' => __('product.alert_quantity'), 'min' => '0']); !!}
             </div>
         </div>
-        @if(!empty($common_settings['enable_product_warranty']))
+        @if(!empty($common_settings['enable_product_warranty']) && (is_null(session('business_type_features')) || data_get(session('business_type_features'), 'warranties.is_enabled', true)))
         <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('warranty_id', __('lang_v1.warranty') . ':') !!}
@@ -157,7 +157,7 @@
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="form-group">
+            <div class="form-group product-image-upload">
                
                 <div class="row">
                     <div class="col-sm-6 image-label">
@@ -213,6 +213,7 @@
         </div>
         @endif
 
+        @if(is_null(session('business_type_features')) || data_get(session('business_type_features'), 'product_imei.is_enabled', true))
         <div class="col-sm-4">
             <div class="form-group">
                 <br>
@@ -221,6 +222,7 @@
                 </label> @show_tooltip(__('lang_v1.tooltip_sr_no'))
             </div>
         </div>
+        @endif
 
         <div class="col-sm-4">
             <div class="form-group">
@@ -262,12 +264,14 @@
         @endforeach
         @endif
 
+        @if(is_null(session('business_type_features')) || data_get(session('business_type_features'), 'product_weight.is_enabled', true))
         <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('weight', __('lang_v1.weight') . ':') !!}
                 {!! Form::text('weight', !empty($duplicate_product->weight) ? $duplicate_product->weight : null, ['class' => 'form-control', 'placeholder' => __('lang_v1.weight')]); !!}
             </div>
         </div>
+        @endif
         @php
         $custom_labels = json_decode(session('business.custom_labels'), true);
         $product_custom_fields = !empty($custom_labels['product']) ? $custom_labels['product'] : [];
@@ -309,12 +313,14 @@
             @endif
         @endforeach
 
+        @if(is_null(session('business_type_features')) || data_get(session('business_type_features'), 'product_preparation_time.is_enabled', true))
         <div class="col-sm-3">
             <div class="form-group">
                 {!! Form::label('preparation_time_in_minutes', __('lang_v1.preparation_time_in_minutes') . ':') !!}
                 {!! Form::number('preparation_time_in_minutes', !empty($duplicate_product->preparation_time_in_minutes) ? $duplicate_product->preparation_time_in_minutes : null, ['class' => 'form-control', 'placeholder' => __('lang_v1.preparation_time_in_minutes')]); !!}
             </div>
         </div>
+        @endif
         <!--custom fields-->
         <div class="clearfix"></div>
         @include('layouts.partials.module_form_part')
@@ -384,6 +390,49 @@
 </section>
 <!-- /.content -->
 
+@endsection
+
+@section('css')
+<style>
+    .product-image-upload .file-preview-frame {
+        display: block !important;
+        float: none !important;
+        width: 100% !important;
+        max-width: 100%;
+        margin: 0 auto 8px !important;
+        box-sizing: border-box;
+    }
+
+    .product-image-upload .file-preview-frame .kv-file-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 180px;
+        overflow: hidden;
+    }
+
+    .product-image-upload .file-preview-image {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: contain;
+    }
+
+    .product-image-upload .file-thumbnail-footer {
+        height: auto !important;
+        min-height: 0;
+        width: 100%;
+    }
+
+    .product-image-upload .file-footer-caption {
+        width: 100% !important;
+        height: auto;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+</style>
 @endsection
 
 @section('javascript')

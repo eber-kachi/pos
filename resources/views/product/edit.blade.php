@@ -31,7 +31,6 @@
                   'placeholder' => __('product.product_name')]); !!}
               </div>
             </div>
-
             <div class="col-sm-4">
               <div class="form-group">
                 {!! Form::label('sku', __('product.sku')  . ':*') !!} @show_tooltip(__('tooltip.sku'))
@@ -133,7 +132,7 @@
                 'placeholder' => __('product.alert_quantity') , 'min' => '0']); !!}
               </div>
             </div>
-            @if(!empty($common_settings['enable_product_warranty']))
+            @if(!empty($common_settings['enable_product_warranty']) && (is_null(session('business_type_features')) || data_get(session('business_type_features'), 'warranties.is_enabled', true)))
             <div class="col-sm-4">
               <div class="form-group">
                 {!! Form::label('warranty_id', __('lang_v1.warranty') . ':') !!}
@@ -215,6 +214,7 @@
             </div>
           </div>
           @endif
+          @if(is_null(session('business_type_features')) || data_get(session('business_type_features'), 'product_imei.is_enabled', true))
           <div class="col-sm-4">
             <div class="checkbox">
               <label>
@@ -223,7 +223,7 @@
               @show_tooltip(__('lang_v1.tooltip_sr_no'))
             </div>
           </div>
-
+          @endif
           <div class="col-sm-4">
           <div class="form-group">
             <br>
@@ -274,12 +274,14 @@
         @endif
 
 
+        @if(is_null(session('business_type_features')) || data_get(session('business_type_features'), 'product_weight.is_enabled', true))
         <div class="col-sm-4">
           <div class="form-group">
             {!! Form::label('weight',  __('lang_v1.weight') . ':') !!}
             {!! Form::text('weight', $product->weight, ['class' => 'form-control', 'placeholder' => __('lang_v1.weight')]); !!}
           </div>
         </div>
+        @endif
         <div class="clearfix"></div>
         
         @php
@@ -316,12 +318,14 @@
             @endif
         @endforeach
 
+        @if(is_null(session('business_type_features')) || data_get(session('business_type_features'), 'product_preparation_time.is_enabled', true))
         <div class="col-sm-3">
           <div class="form-group">
             {!! Form::label('preparation_time_in_minutes',  __('lang_v1.preparation_time_in_minutes') . ':') !!}
             {!! Form::number('preparation_time_in_minutes', $product->preparation_time_in_minutes, ['class' => 'form-control', 'placeholder' => __('lang_v1.preparation_time_in_minutes')]); !!}
           </div>
         </div>
+        @endif
         <!--custom fields-->
         @include('layouts.partials.module_form_part')
         </div>

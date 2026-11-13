@@ -63,6 +63,11 @@ class Business extends Model
         return $this->hasOne(\App\User::class, 'id', 'owner_id');
     }
 
+    public function businessType()
+    {
+        return $this->belongsTo(BusinessType::class);
+    }
+
     /**
      * Get the Business currency.
      */

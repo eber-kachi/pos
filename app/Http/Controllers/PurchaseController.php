@@ -9,6 +9,7 @@ use App\Contact;
 use App\CustomerGroup;
 use App\Product;
 use App\PurchaseLine;
+use App\Exports\PurchaseProductsTemplateExport;
 use App\TaxRate;
 use App\Transaction;
 use App\User;
@@ -1112,123 +1113,173 @@ class PurchaseController extends Controller
     public function importPurchaseProducts(Request $request)
     {
         try {
-            $file = $request->file('file');
-
-            $parsed_array = Excel::toArray([], $file);
-            //Remove header row
-            $imported_data = array_splice($parsed_array[0], 1);
-
-            $business_id = $request->session()->get('user.business_id');
-            $location_id = $request->input('location_id');
-            $row_count = $request->input('row_count');
-
-            $formatted_data = [];
-            $row_index = 0;
-            $error_msg = '';
-            foreach ($imported_data as $key => $value) {
-                $row_index = $key + 1;
-                $temp_array = [];
-
-                if (! empty($value[0])) {
-                    $variation = Variation::where('sub_sku', trim($value[0]))
-                                        ->join('products', 'products.id', '=', 'variations.product_id')
-                                        ->where('products.business_id', $business_id) 
-                                        ->with([
-                                            'product_variation',
-                                            'variation_location_details' => function ($q) use ($location_id) {
-                                                $q->where('location_id', $location_id);
-                                            },
-                                        ])
-                                        ->select('variations.*')
-                                        ->first();
-                    $temp_array['variation'] = $variation;
-
-                    if (empty($variation)) {
-                        $error_msg = __('lang_v1.product_not_found_exception', ['row' => $row_index, 'sku' => $value[0]]);
-                        break;
-                    }
-
-                    $product = Product::where('id', $variation->product_id)
-                                    ->where('business_id', $business_id)
-                                    ->with(['unit'])
-                                    ->first();
-
-                    if (empty($product)) {
-                        $error_msg = __('lang_v1.product_not_found_exception', ['row' => $row_index, 'sku' => $value[0]]);
-                        break;
-                    }
-
-                    $temp_array['product'] = $product;
-
-                    $sub_units = $this->productUtil->getSubUnits($business_id, $product->unit->id, false, $product->id);
-
-                    $temp_array['sub_units'] = $sub_units;
-                } else {
-                    $error_msg = __('lang_v1.product_not_found_exception', ['row' => $row_index, 'sku' => $value[0]]);
-                    break;
-                }
-
-                if (! empty($value[0])) {
-                    $temp_array['quantity'] = $value[1];
-                } else {
-                    $error_msg = __('lang_v1.quantity_required', ['row' => $row_index]);
-                    break;
-                }
-
-                $temp_array['unit_cost_before_discount'] = ! empty($value[2]) ? $value[2] : $variation->default_purchase_price;
-                $temp_array['discount_percent'] = ! empty($value[3]) ? $value[3] : 0;
-
-                $tax_id = null;
-
-                if (! empty($value[4])) {
-                    $tax_name = trim($value[4]);
-                    $tax = TaxRate::where('business_id', $business_id)
-                                ->where('name', 'like', "%{$tax_name}%")
-                                ->first();
-
-                    $tax_id = $tax->id ?? $tax_id;
-                }
-
-                $temp_array['tax_id'] = $tax_id;
-                $temp_array['lot_number'] = ! empty($value[5]) ? $value[5] : null;
-                $temp_array['mfg_date'] = ! empty($value[6]) ? $this->productUtil->format_date($value[6]) : null;
-                $temp_array['exp_date'] = ! empty($value[7]) ? $this->productUtil->format_date($value[7]) : null;
-
-                $formatted_data[] = $temp_array;
+            if (! $request->hasFile('file')) {
+                throw new \Exception(__('lang_v1.purchase_import_file_required'));
             }
 
-            if (! empty($error_msg)) {
-                return [
-                    'success' => false,
-                    'msg' => $error_msg,
+            $parsedArray = Excel::toArray([], $request->file('file'));
+            $sheet = $parsedArray[0] ?? [];
+            $headers = $sheet[0] ?? [];
+            if (empty($headers)) {
+                throw new \Exception(__('lang_v1.purchase_import_headers_invalid'));
+            }
+            $importedData = array_slice($sheet, 1);
+
+            $normalize = function ($value) {
+                $value = preg_replace('/^\\xEF\\xBB\\xBF/', '', (string) $value);
+                return mb_strtolower(trim($value), 'UTF-8');
+            };
+            $headerIndexes = [];
+            foreach ($headers as $index => $header) {
+                $normalizedHeader = $normalize($header);
+                if ($normalizedHeader !== '') {
+                    $headerIndexes[$normalizedHeader] = $index;
+                }
+            }
+            $findColumn = function (array $aliases) use ($headerIndexes, $normalize) {
+                foreach ($aliases as $alias) {
+                    $normalizedAlias = $normalize($alias);
+                    if (array_key_exists($normalizedAlias, $headerIndexes)) {
+                        return $headerIndexes[$normalizedAlias];
+                    }
+                }
+                return null;
+            };
+
+            $columns = [
+                'sku' => $findColumn(['SKU']),
+                'quantity' => $findColumn([__('lang_v1.purchase_template_quantity', [], 'es'), 'PURCHASE QUANTITY', 'QUANTITY', 'CANTIDAD DE COMPRA']),
+                'unit_cost' => $findColumn([__('lang_v1.purchase_template_unit_cost', [], 'es'), 'UNIT COST (BEFORE DISCOUNT)', 'UNIT COST BEFORE DISCOUNT']),
+                'discount' => $findColumn([__('lang_v1.purchase_template_discount', [], 'es'), 'DISCOUNT PERCENT', 'DISCOUNT PERCENT %']),
+                'tax' => $findColumn([__('lang_v1.purchase_template_tax', [], 'es'), 'TAX NAME', 'TAX']),
+                'lot_number' => $findColumn([__('lang_v1.purchase_template_lot_number', [], 'es'), 'LOT NUMBER']),
+                'mfg_date' => $findColumn([__('lang_v1.purchase_template_manufacturing_date', [], 'es'), 'MFG DATE', 'MANUFACTURING DATE']),
+                'exp_date' => $findColumn([__('lang_v1.purchase_template_expiry_date', [], 'es'), 'EXPIRY DATE', 'EXP DATE']),
+            ];
+            if ($columns['sku'] === null || $columns['quantity'] === null) {
+                throw new \Exception(__('lang_v1.purchase_import_headers_invalid'));
+            }
+
+            $businessId = $request->session()->get('user.business_id');
+            $locationId = $request->input('location_id');
+            $rowCount = $request->input('row_count');
+            $formattedData = [];
+            $errorMessage = '';
+
+            foreach ($importedData as $key => $row) {
+                $rowNumber = $key + 2;
+                $sku = trim((string) ($row[$columns['sku']] ?? ''));
+                if ($sku === '') {
+                    $errorMessage = __('lang_v1.purchase_import_sku_required', ['row' => $rowNumber]);
+                    break;
+                }
+
+                $variation = Variation::where('sub_sku', $sku)
+                    ->join('products', 'products.id', '=', 'variations.product_id')
+                    ->where('products.business_id', $businessId)
+                    ->with([
+                        'product_variation',
+                        'variation_location_details' => function ($query) use ($locationId) {
+                            $query->where('location_id', $locationId);
+                        },
+                    ])
+                    ->select('variations.*')
+                    ->first();
+                if (! $variation) {
+                    $errorMessage = __('lang_v1.purchase_import_sku_not_found', ['row' => $rowNumber, 'sku' => $sku]);
+                    break;
+                }
+
+                $product = Product::where('id', $variation->product_id)
+                    ->where('business_id', $businessId)
+                    ->with(['unit'])
+                    ->first();
+                if (! $product) {
+                    $errorMessage = __('lang_v1.purchase_import_sku_not_found', ['row' => $rowNumber, 'sku' => $sku]);
+                    break;
+                }
+
+                $quantity = $row[$columns['quantity']] ?? null;
+                if ($quantity === null || $quantity === '') {
+                    $errorMessage = __('lang_v1.quantity_required', ['row' => $rowNumber]);
+                    break;
+                }
+                if (! is_numeric($quantity) || (float) $quantity <= 0) {
+                    $errorMessage = __('lang_v1.purchase_import_quantity_invalid', ['row' => $rowNumber]);
+                    break;
+                }
+
+                $subUnits = $this->productUtil->getSubUnits($businessId, $product->unit->id, false, $product->id);
+                $getCell = function ($column) use ($row) {
+                    return $column === null ? null : ($row[$column] ?? null);
+                };
+                foreach ([
+                    'unit_cost' => __('lang_v1.purchase_template_unit_cost', [], 'es'),
+                    'discount' => __('lang_v1.purchase_template_discount', [], 'es'),
+                ] as $numericColumn => $columnLabel) {
+                    $numericValue = $getCell($columns[$numericColumn]);
+                    if ($numericValue !== null && $numericValue !== '' && ! is_numeric($numericValue)) {
+                        $errorMessage = __('lang_v1.purchase_import_numeric_invalid', ['column' => $columnLabel, 'row' => $rowNumber]);
+                        break;
+                    }
+                }
+                if ($errorMessage !== '') {
+                    break;
+                }
+                $tempArray = [
+                    'variation' => $variation,
+                    'product' => $product,
+                    'sub_units' => $subUnits,
+                    'quantity' => $quantity,
+                    'unit_cost_before_discount' => $getCell($columns['unit_cost']) ?: $variation->default_purchase_price,
+                    'discount_percent' => $getCell($columns['discount']) ?: 0,
+                    'lot_number' => $getCell($columns['lot_number']) ?: null,
+                    'mfg_date' => $getCell($columns['mfg_date']) ? $this->productUtil->format_date($getCell($columns['mfg_date'])) : null,
+                    'exp_date' => $getCell($columns['exp_date']) ? $this->productUtil->format_date($getCell($columns['exp_date'])) : null,
                 ];
+
+                $taxId = null;
+                $taxName = trim((string) $getCell($columns['tax']));
+                if ($taxName !== '') {
+                    $tax = TaxRate::where('business_id', $businessId)
+                        ->where('name', 'like', "%{$taxName}%")
+                        ->first();
+                    $taxId = $tax->id ?? null;
+                }
+                $tempArray['tax_id'] = $taxId;
+                $formattedData[] = $tempArray;
             }
 
-            $hide_tax = 'hide';
-            if ($request->session()->get('business.enable_inline_tax') == 1) {
-                $hide_tax = '';
+            if ($errorMessage !== '') {
+                return ['success' => false, 'msg' => $errorMessage];
             }
 
-            $taxes = TaxRate::where('business_id', $business_id)
-                            ->ExcludeForTaxGroup()
-                            ->get();
-
-            $currency_details = $this->transactionUtil->purchaseCurrencyDetails($business_id);
-
+            $hideTax = $request->session()->get('business.enable_inline_tax') == 1 ? '' : 'hide';
+            $taxes = TaxRate::where('business_id', $businessId)->ExcludeForTaxGroup()->get();
+            $currencyDetails = $this->transactionUtil->purchaseCurrencyDetails($businessId);
             $html = view('purchase.partials.imported_purchase_product_rows')
-                        ->with(compact('formatted_data', 'taxes', 'currency_details', 'hide_tax', 'row_count'))->render();
+                ->with([
+                    'formatted_data' => $formattedData,
+                    'taxes' => $taxes,
+                    'currency_details' => $currencyDetails,
+                    'hide_tax' => $hideTax,
+                    'row_count' => $rowCount,
+                ])
+                ->render();
 
-            return [
-                'success' => true,
-                'msg' => __('lang_v.imported'),
-                'html' => $html,
-            ];
+            return ['success' => true, 'msg' => __('lang_v.imported'), 'html' => $html];
         } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'msg' => $e->getMessage(),
-            ];
+            return ['success' => false, 'msg' => $e->getMessage()];
         }
+    }
+
+    public function downloadPurchaseProductsTemplate()
+    {
+        if (! auth()->user()->can('purchase.create')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return Excel::download(new PurchaseProductsTemplateExport(), 'plantilla_importar_productos_compra.xls');
     }
 
     public function getPurchaseOrderLines($purchase_order_id)

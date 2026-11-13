@@ -47,6 +47,7 @@ class AdminSidebarMenu
             <path d="M10 12h4v4h-4z" />
           </svg>', 'active' => request()->segment(1) == 'home'])->order(5);
 
+
             //User management dropdown
             if (auth()->user()->can('user.view') || auth()->user()->can('user.create') || auth()->user()->can('roles.view')) {
                 $menu->dropdown(
@@ -66,7 +67,7 @@ class AdminSidebarMenu
                                 ['icon' => '', 'active' => request()->segment(1) == 'roles']
                             );
                         }
-                        if (auth()->user()->can('user.create')) {
+                        if (auth()->user()->can('user.create') && (is_null(session('business_type_features')) || data_get(session('business_type_features'), 'sales_commission_agents.is_enabled', true))) {
                             $sub->url(
                                 action([\App\Http\Controllers\SalesCommissionAgentController::class, 'index']),
                                 __('lang_v1.sales_commission_agents'),
@@ -223,11 +224,13 @@ class AdminSidebarMenu
                             );
                         }
 
-                        $sub->url(
-                            action([\App\Http\Controllers\WarrantyController::class, 'index']),
-                            __('lang_v1.warranties'),
-                            ['icon' => '', 'active' => request()->segment(1) == 'warranties']
-                        );
+                        if (is_null(session('business_type_features')) || data_get(session('business_type_features'), 'warranties.is_enabled', true)) {
+                            $sub->url(
+                                action([\App\Http\Controllers\WarrantyController::class, 'index']),
+                                __('lang_v1.warranties'),
+                                ['icon' => '', 'active' => request()->segment(1) == 'warranties']
+                            );
+                        }
                     },
                     ['icon' => '<svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -312,7 +315,7 @@ class AdminSidebarMenu
                                 ['icon' => '', 'active' => request()->segment(1) == 'sells' && request()->segment(2) == null]
                             );
                         }
-                        if (in_array('add_sale', $enabled_modules) && auth()->user()->can('direct_sell.access')) {
+                        if ((is_null(session('business_type_features')) || data_get(session('business_type_features'), 'sales_quotations.is_enabled', true)) && in_array('add_sale', $enabled_modules) && auth()->user()->can('direct_sell.access')) {
                             $sub->url(
                                 action([\App\Http\Controllers\SellController::class, 'create']),
                                 __('sale.add_sale'),
@@ -358,7 +361,7 @@ class AdminSidebarMenu
                                 ['icon' => '', 'active' => request()->get('status') == 'quotation']
                             );
                         }
-                        if (in_array('add_sale', $enabled_modules) && ($is_admin || auth()->user()->hasAnyPermission(['quotation.view_all', 'quotation.view_own']))) {
+                        if ((is_null(session('business_type_features')) || data_get(session('business_type_features'), 'sales_quotations.is_enabled', true)) && in_array('add_sale', $enabled_modules) && ($is_admin || auth()->user()->hasAnyPermission(['quotation.view_all', 'quotation.view_own']))) {
                             $sub->url(
                                 action([\App\Http\Controllers\SellController::class, 'getQuotations']),
                                 __('lang_v1.list_quotations'),
@@ -693,7 +696,7 @@ class AdminSidebarMenu
                                 ['icon' => '', 'active' => request()->segment(2) == 'register-report']
                             );
                         }
-                        if (auth()->user()->can('sales_representative.view')) {
+                        if (auth()->user()->can('sales_representative.view') && (is_null(session('business_type_features')) || data_get(session('business_type_features'), 'sales_commission_agents.is_enabled', true))) {
                             $sub->url(
                                 action([\App\Http\Controllers\ReportController::class, 'getSalesRepresentativeReport']),
                                 __('report.sales_representative'),

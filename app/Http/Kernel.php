@@ -69,6 +69,7 @@ class Kernel extends HttpKernel
         'EcomApi' => \App\Http\Middleware\EcomApi::class,
         'AdminSidebarMenu' => \App\Http\Middleware\AdminSidebarMenu::class,
         'superadmin' => \App\Http\Middleware\Superadmin::class,
+        'business_feature' => \App\Http\Middleware\EnsureBusinessFeatureEnabled::class,
         'CheckUserLogin' => \App\Http\Middleware\CheckUserLogin::class,
     ];
 }

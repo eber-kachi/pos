@@ -6,6 +6,7 @@
 			    <h4 class="modal-title">@lang('product.import_products')</h4>
 			</div>
 			<div class="modal-body">
+				<div id="purchase_import_error" class="alert alert-danger hide" role="alert" aria-live="assertive"></div>
 				<div class="row">
 					<div class="col-md-12">
 						<strong>@lang( 'product.file_to_import' ):</strong>
@@ -14,14 +15,14 @@
 						<div id="import_product_dz" class="dropzone"></div>
 					</div>
 					<div class="col-md-12 mt-10">
-						<a href="{{ asset('files/import_purchase_products_template.xls') }}" class="tw-dw-btn tw-dw-btn-success tw-text-white" download><i class="fa fa-download"></i> @lang('lang_v1.download_template_file')</a>
+						<a href="{{ route('purchases.importProductsTemplate') }}" class="tw-dw-btn tw-dw-btn-success tw-text-white"><i class="fa fa-download"></i> @lang('lang_v1.download_template_file')</a>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-12">
 						<h4>{{__('lang_v1.instructions')}}:</h4>
 						<strong>@lang('lang_v1.instruction_line1')</strong><br>
-		                    @lang('lang_v1.instruction_line2')
+		                    @lang('lang_v1.purchase_import_order_instruction')
 		                    <br><br>
 						<table class="table table-striped">
 		                    <tr>
@@ -31,41 +32,46 @@
 		                    </tr>
 		                    <tr>
 		                    	<td>1</td>
-		                        <td>@lang('product.sku') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
+		                        <td>@lang('lang_v1.purchase_template_product_name')</td>
 		                        <td></td>
 		                    </tr>
 		                    <tr>
 		                    	<td>2</td>
-		                        <td>@lang('purchase.purchase_quantity') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
+		                        <td>@lang('product.sku') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
 		                        <td></td>
 		                    </tr>
 		                    <tr>
 		                    	<td>3</td>
-		                        <td>@lang( 'lang_v1.unit_cost_before_discount' ) <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+		                        <td>@lang('purchase.purchase_quantity') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
 		                        <td></td>
 		                    </tr>
 		                    <tr>
 		                    	<td>4</td>
-		                        <td>@lang( 'lang_v1.discount_percent' ) <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+		                        <td>@lang( 'lang_v1.unit_cost_before_discount' ) <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
 		                        <td></td>
 		                    </tr>
 		                    <tr>
 		                    	<td>5</td>
+		                        <td>@lang( 'lang_v1.discount_percent' ) <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+		                        <td></td>
+		                    </tr>
+		                    <tr>
+							<td>6</td>
 		                        <td>@lang( 'purchase.product_tax' ) <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
 		                        <td></td>
 		                    </tr>
 		                    <tr>
-		                    	<td>6</td>
+							<td>7</td>
 		                        <td>@lang('lang_v1.lot_number') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
 		                        <td>{!! __('lang_v1.lot_number_instructions') !!}</td>
 		                    </tr>
 		                    <tr>
-		                    	<td>7</td>
+							<td>8</td>
 		                        <td>@lang('product.mfg_date') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
 		                        <td>{!! __('lang_v1.exp_date_instructions') !!} <br>{!! __('lang_v1.date_ins') !!} </td>
 		                    </tr>
 		                    <tr>
-		                    	<td>8</td>
+							<td>9</td>
 		                        <td>@lang('product.exp_date') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
 		                        <td>{!! __('lang_v1.exp_date_instructions') !!} <br>{!! __('lang_v1.date_ins') !!}</td>
 		                    </tr>
