@@ -1279,6 +1279,7 @@ if ($("div#import_product_dz").length) {
         maxFiles:1,
         init: function() {
             this.on("addedfile", function(file) {
+                $('#purchase_import_error').addClass('hide').text('');
                 if ($('#location_id').val() == '') {
                     this.removeFile(file);
                     toastr.error('select location first');
@@ -1299,6 +1300,7 @@ if ($("div#import_product_dz").length) {
         },
         success: function(file, response) {
             if (response.success) {
+                $('#purchase_import_error').addClass('hide').text('');
                 toastr.success(response.msg);
                 var row_count = $('#row_count').val();
                 append_purchase_lines(response.html, row_count, true);
@@ -1307,8 +1309,14 @@ if ($("div#import_product_dz").length) {
 
                 $('#import_purchase_products_modal').modal('hide');
             } else {
+                $('#purchase_import_error').removeClass('hide').text(response.msg || 'Could not import purchase products.');
                 toastr.error(response.msg);
             }
+        },
+        error: function(file, response) {
+            var message = typeof response === 'string' ? response : (response.msg || 'Could not read the import file.');
+            $('#purchase_import_error').removeClass('hide').text(message);
+            toastr.error(message);
         },
     });
 }

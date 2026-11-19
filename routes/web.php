@@ -99,6 +99,16 @@ Route::middleware(['setData'])->group(function () {
 
 //Routes for authenticated users only
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu', 'CheckUserLogin'])->group(function () {
+    Route::middleware('superadmin')->prefix('superadmin')->group(function () {
+        Route::get('business-types', [\App\Http\Controllers\Superadmin\BusinessTypeController::class, 'index'])->name('superadmin.business-types.index');
+        Route::get('business-types/create', [\App\Http\Controllers\Superadmin\BusinessTypeController::class, 'create'])->name('superadmin.business-types.create');
+        Route::post('business-types', [\App\Http\Controllers\Superadmin\BusinessTypeController::class, 'store'])->name('superadmin.business-types.store');
+        Route::get('business-types/assignments', [\App\Http\Controllers\Superadmin\BusinessTypeController::class, 'assignments'])->name('superadmin.business-types.assignments');
+        Route::post('business-types/assignments/{businessId}', [\App\Http\Controllers\Superadmin\BusinessTypeController::class, 'assign'])->name('superadmin.business-types.assign');
+        Route::get('business-types/{id}/edit', [\App\Http\Controllers\Superadmin\BusinessTypeController::class, 'edit'])->name('superadmin.business-types.edit');
+        Route::put('business-types/{id}', [\App\Http\Controllers\Superadmin\BusinessTypeController::class, 'update'])->name('superadmin.business-types.update');
+    });
+
     Route::get('pos/payment/{id}', [SellPosController::class, 'edit'])->name('edit-pos-payment');
     Route::get('service-staff-availability', [SellPosController::class, 'showServiceStaffAvailibility']);
     Route::get('pause-resume-service-staff-timer/{user_id}', [SellPosController::class, 'pauseResumeServiceStaffTimer']);
@@ -199,10 +209,10 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/sells/drafts', 'SellController@getDrafts');
     Route::get('/sells/convert-to-draft/{id}', 'SellPosController@convertToInvoice');
     Route::get('/sells/convert-to-proforma/{id}', 'SellPosController@convertToProforma');
-    Route::get('/sells/quotations', 'SellController@getQuotations');
+    Route::get('/sells/quotations', 'SellController@getQuotations')->middleware('business_feature:sales_quotations');
     Route::get('/sells/draft-dt', 'SellController@getDraftDatables');
     Route::resource('sells', 'SellController')->except(['show']);
-    Route::get('/sells/copy-quotation/{id}', [SellPosController::class, 'copyQuotation']);
+    Route::get('/sells/copy-quotation/{id}', [SellPosController::class, 'copyQuotation'])->middleware('business_feature:sales_quotations');
 
     Route::post('/import-purchase-products', [PurchaseController::class, 'importPurchaseProducts']);
     Route::post('/purchases/update-status', [PurchaseController::class, 'updateStatus']);
@@ -219,7 +229,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/sells/drafts', [SellController::class, 'getDrafts']);
     Route::get('/sells/convert-to-draft/{id}', [SellPosController::class, 'convertToInvoice']);
     Route::get('/sells/convert-to-proforma/{id}', [SellPosController::class, 'convertToProforma']);
-    Route::get('/sells/quotations', [SellController::class, 'getQuotations']);
+    Route::get('/sells/quotations', [SellController::class, 'getQuotations'])->middleware('business_feature:sales_quotations');
     Route::get('/sells/draft-dt', [SellController::class, 'getDraftDatables']);
     Route::resource('sells', SellController::class)->except(['show']);
 
@@ -281,10 +291,10 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/reports/expense-report', [ReportController::class, 'getExpenseReport']);
     Route::get('/reports/stock-adjustment-report', [ReportController::class, 'getStockAdjustmentReport']);
     Route::get('/reports/register-report', [ReportController::class, 'getRegisterReport']);
-    Route::get('/reports/sales-representative-report', [ReportController::class, 'getSalesRepresentativeReport']);
-    Route::get('/reports/sales-representative-total-expense', [ReportController::class, 'getSalesRepresentativeTotalExpense']);
-    Route::get('/reports/sales-representative-total-sell', [ReportController::class, 'getSalesRepresentativeTotalSell']);
-    Route::get('/reports/sales-representative-total-commission', [ReportController::class, 'getSalesRepresentativeTotalCommission']);
+    Route::get('/reports/sales-representative-report', [ReportController::class, 'getSalesRepresentativeReport'])->middleware('business_feature:sales_commission_agents');
+    Route::get('/reports/sales-representative-total-expense', [ReportController::class, 'getSalesRepresentativeTotalExpense'])->middleware('business_feature:sales_commission_agents');
+    Route::get('/reports/sales-representative-total-sell', [ReportController::class, 'getSalesRepresentativeTotalSell'])->middleware('business_feature:sales_commission_agents');
+    Route::get('/reports/sales-representative-total-commission', [ReportController::class, 'getSalesRepresentativeTotalCommission'])->middleware('business_feature:sales_commission_agents');
     Route::get('/reports/stock-expiry', [ReportController::class, 'getStockExpiryReport']);
     Route::get('/reports/stock-expiry-edit-modal/{purchase_line_id}', [ReportController::class, 'getStockExpiryReportEditModal']);
     Route::post('/reports/stock-expiry-update', [ReportController::class, 'updateStockExpiryReport'])->name('updateStockExpiryReport');
@@ -352,9 +362,10 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     //Import products
     Route::get('/import-products', [ImportProductsController::class, 'index']);
     Route::post('/import-products/store', [ImportProductsController::class, 'store']);
+    Route::get('/files/import_purchase_products_template.xls', [PurchaseController::class, 'downloadPurchaseProductsTemplate'])->name('purchases.importProductsTemplate');
 
     //Sales Commission Agent
-    Route::resource('sales-commission-agents', SalesCommissionAgentController::class);
+    Route::resource('sales-commission-agents', SalesCommissionAgentController::class)->middleware('business_feature:sales_commission_agents');
 
     //Stock Transfer
     Route::get('stock-transfers/print/{id}', [StockTransferController::class, 'printInvoice']);
@@ -471,7 +482,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         ->only(['index', 'update']);
     Route::get('regenerate', [Install\ModulesController::class, 'regenerate']);
 
-    Route::resource('warranties', WarrantyController::class);
+    Route::resource('warranties', WarrantyController::class)->middleware('business_feature:warranties');
 
     Route::resource('dashboard-configurator', DashboardConfiguratorController::class)
     ->only(['edit', 'update']);
@@ -521,6 +532,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])
     Route::get('/sells/{transaction_id}/print', [SellPosController::class, 'printInvoice'])->name('sell.printInvoice');
     Route::get('/download-sells/{transaction_id}/pdf', [SellPosController::class, 'downloadPdf'])->name('sell.downloadPdf');
     Route::get('/download-quotation/{id}/pdf', [SellPosController::class, 'downloadQuotationPdf'])
+        ->middleware('business_feature:sales_quotations')
         ->name('quotation.downloadPdf');
     Route::get('/download-packing-list/{id}/pdf', [SellPosController::class, 'downloadPackingListPdf'])
         ->name('packing.downloadPdf');

@@ -565,6 +565,12 @@ class SellController extends Controller
      */
     public function create()
     {
+        if (request()->get('status') == 'quotation'
+            && ! is_null(session('business_type_features'))
+            && ! data_get(session('business_type_features'), 'sales_quotations.is_enabled', true)) {
+            abort(404);
+        }
+
         $sale_type = request()->get('sale_type', '');
 
         if ($sale_type == 'sales_order') {
