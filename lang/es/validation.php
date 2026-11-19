@@ -89,6 +89,66 @@ return [
     'url' => 'El formato :attribute es inválido.',
     'indisposable' => 'Este correo electrónico no está permitido.',
 
+    /* --- Traducciones agregadas (claves faltantes respecto a EN) --- */
+    'accepted_if' => ':attribute debe ser aceptado cuando :other es :value.',
+    'ascii' => 'El campo :attribute solo debe contener caracteres alfanuméricos y símbolos de un solo byte.',
+    'current_password' => 'La contraseña es incorrecta.',
+    'date_equals' => ':attribute debe ser una fecha igual a :date.',
+    'decimal' => 'El :attribute debe tener :decimal decimales.',
+    'declined' => 'El :attribute debe ser rechazado.',
+    'declined_if' => 'El :attribute debe ser rechazado cuando :other es :value.',
+    'doesnt_end_with' => 'El :attribute no puede terminar con uno de los siguientes valores: :values.',
+    'doesnt_start_with' => 'El :attribute no puede comenzar con uno de los siguientes valores: :values.',
+    'ends_with' => 'El :attribute debe terminar con uno de los siguientes valores: :values.',
+    'enum' => 'El :attribute seleccionado es inválido.',
+    'gt' => [
+        'array' => 'El :attribute debe tener más de :value elementos.',
+        'file' => 'El :attribute debe ser mayor que :value kilobytes.',
+        'numeric' => 'El :attribute debe ser mayor que :value.',
+        'string' => 'El :attribute debe ser mayor que :value caracteres.',
+    ],
+    'gte' => [
+        'array' => 'El :attribute debe tener :value elementos o más.',
+        'file' => 'El :attribute debe ser mayor o igual que :value kilobytes.',
+        'numeric' => 'El :attribute debe ser mayor o igual que :value.',
+        'string' => 'El :attribute debe ser mayor o igual que :value caracteres.',
+    ],
+    'lowercase' => 'El :attribute debe estar en minúsculas.',
+    'lt' => [
+        'array' => 'El :attribute debe tener menos de :value elementos.',
+        'file' => 'El :attribute debe ser menor que :value kilobytes.',
+        'numeric' => 'El :attribute debe ser menor que :value.',
+        'string' => 'El :attribute debe ser menor que :value caracteres.',
+    ],
+    'lte' => [
+        'array' => 'El :attribute no debe tener más de :value elementos.',
+        'file' => 'El :attribute debe ser menor o igual que :value kilobytes.',
+        'numeric' => 'El :attribute debe ser menor o igual que :value.',
+        'string' => 'El :attribute debe ser menor o igual que :value caracteres.',
+    ],
+    'mac_address' => 'El :attribute debe ser una dirección MAC válida.',
+    'max_digits' => 'El :attribute no debe tener más de :max dígitos.',
+    'min_digits' => 'El :attribute debe tener al menos :min dígitos.',
+    'multiple_of' => 'El :attribute debe ser múltiplo de :value.',
+    'not_regex' => 'El formato del :attribute es inválido.',
+    'password' => [
+        'letters' => 'La :attribute debe contener al menos una letra.',
+        'mixed' => 'La :attribute debe contener al menos una letra mayúscula y una minúscula.',
+        'numbers' => 'La :attribute debe contener al menos un número.',
+        'symbols' => 'La :attribute debe contener al menos un símbolo.',
+        'uncompromised' => 'La :attribute proporcionada ha aparecido en una filtración de datos. Por favor elija una :attribute diferente.',
+    ],
+    'prohibited' => 'El campo :attribute está prohibido.',
+    'prohibited_if' => 'El campo :attribute está prohibido cuando :other es :value.',
+    'prohibited_unless' => 'El campo :attribute está prohibido a menos que :other esté en :values.',
+    'prohibits' => 'El campo :attribute impide que :other esté presente.',
+    'required_array_keys' => 'El campo :attribute debe contener entradas para: :values.',
+    'required_if_accepted' => 'El campo :attribute es obligatorio cuando :other es aceptado.',
+    'starts_with' => 'El :attribute debe comenzar con uno de los siguientes valores: :values.',
+    'uppercase' => 'El :attribute debe estar en mayúsculas.',
+    'ulid' => 'El :attribute debe ser un ULID válido.',
+    'uuid' => 'El :attribute debe ser un UUID válido.',
+
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
@@ -151,6 +211,11 @@ return [
         'time' => 'hora',
         'subject' => 'asunto',
         'message' => 'mensaje',
+    ],
+
+    'custom-messages' => [
+        'quantity_not_available' => 'Cantidad :qty :unit disponible',
+        'this_field_is_required' => 'Este campo es obligatorio',
     ],
 
 ];

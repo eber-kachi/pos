@@ -52,4 +52,8 @@
      'accounting_method' => 'Método de contabilidad',
      'transaction_edit_days' => 'Número de días desde la Fecha de transacción hasta la cual se puede editar una transacción',
      'stock_expiry_alert' => "Lista de existencias con vencimiento en :days días <br> <small class ='text-muted'> Puede establecer el número de días en Configuración empresarial </small>",
- ];
+ 
+    /* --- Traducciones agregadas (claves faltantes respecto a EN) --- */
+    'sub_sku' => 'El SKU es opcional. <br><br><small>Déjelo en blanco para generar el SKU automáticamente.<small>',
+    'shipping' => 'Establezca los detalles de envío y los cargos de envío. Haga clic en el icono de editar de abajo para agregar/actualizar los detalles y cargos de envío.',
+];

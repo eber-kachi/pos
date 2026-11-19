@@ -23,7 +23,7 @@
      'first_name' => 'Nombre',
      'last_name' => 'Apellido',
      'username' => 'Nombre de usuario',
-     'email' => 'Email',
+     'email' => 'Correo electrónico',
      'password' => 'Contraseña',
      'confirm_password' => 'Confirmar contraseña',
      'register' => 'Registro',
@@ -82,7 +82,6 @@
      'show_help_text' => 'Mostrar texto de ayuda',
      'mobile' => 'Móvil',
      'alternate_number' => 'Número de contacto alternativo',
-     'email' => 'Email',
      'settings' => 'Configuraciones',
      'transaction_edit_days' => 'Días de edición de transacción',
      'dashboard' => 'Tablero',
@@ -98,4 +97,10 @@
      'is_active' => 'Activo',
      'created_by' => 'Creado por',
      'additional_number_secondary' => 'Número adicional/Número secundario',
- ];
+ 
+    /* --- Traducciones agregadas (claves faltantes respecto a EN) --- */
+    'land_mark' => 'Punto de referencia',
+    'street_name' => 'Nombre de la calle',
+    'building_number' => 'Número del edificio',
+    'additional_number' => 'Número adicional',
+];

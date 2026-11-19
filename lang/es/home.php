@@ -19,4 +19,7 @@
      'due_amount' => 'Cantidad debida',
      'stock_expiry_alert' => 'Alerta de caducidad',
      'todays_profit' => 'Beneficio de hoy',
- ];
+ 
+    /* --- Traducciones agregadas (claves faltantes respecto a EN) --- */
+    'dashboard' => 'Panel de control',
+];

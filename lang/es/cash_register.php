@@ -19,11 +19,19 @@
      'current_register' => 'Registro actual',
      'close_register' => 'Cerrar registro',
      'total_card_slips' => 'Total pases de tarjetas', /* modified */
-     'total_cheques' => 'Total cheques', /* modified */
+     'total_cheques' => 'Total de cheques', /* modified */
      'closing_note' => 'Nota de cierre',
      'close_success' => 'Registro cerrado con éxito',
      'open' => 'Abierto',
      'close' => 'Cerrar', /* modified */
      'total_refund' => 'Reembolso total',
      'refunds' => 'Reembolsos',
+     'open_time' => 'Hora de apertura',
+     'closing_amount' => 'Monto de cierre',
+     'register_closed_at' => 'Hora de cierre',
+     'register_closed_mail_subject' => 'Cierre de caja — :business',
+     'register_closed_mail_intro' => 'Se ha cerrado una caja. A continuación el resumen; el detalle completo va adjunto en PDF.',
+     'register_closed_mail_attachment' => 'Adjuntamos el detalle del arqueo en PDF.',
+     'total_sale' => 'Total ventas',
+     'total_expense' => 'Total gastos',
  ];

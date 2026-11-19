@@ -15,14 +15,14 @@
      'amount' => 'Cantidad',
      'payment_method' => 'Método de pago',
      'no_records_found' => 'No se encontrarón archivos',
-     'payment_due' => 'Fecha pago', /* modified */
+     'payment_due' => 'Pago Pendiente', /* modified */
      'purchase_total' => 'Total compra', /* modified */
      'location' => 'Ubicación',
      'payment_note' => 'Nota de pago',
      'all_purchases' => 'Todas las compras',
      'purchase_status' => 'Estado de compra',
      'payment_status' => 'Estado de pago',
-     'grand_total' => 'Gran total',
+     'grand_total' => 'Total General',
      'add_purchase' => 'Agregar compra',
      'purchase_date' => 'Fecha de compra',
      'purchase_quantity' => 'Cantidad de compra',

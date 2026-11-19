@@ -36,5 +36,13 @@ return [
     'close' => 'Close',
     'total_refund' => 'Total Refund',
     'refunds' => 'Refunds',
+    'open_time' => 'Open time',
+    'closing_amount' => 'Closing amount',
+    'register_closed_at' => 'Closing time',
+    'register_closed_mail_subject' => 'Cash register closed — :business',
+    'register_closed_mail_intro' => 'A cash register has been closed. Summary below; the full detail is attached as PDF.',
+    'register_closed_mail_attachment' => 'The register detail is attached as PDF.',
+    'total_sale' => 'Total sales',
+    'total_expense' => 'Total expenses',
 
 ];

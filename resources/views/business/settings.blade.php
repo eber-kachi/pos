@@ -11,7 +11,7 @@
 </section>
 
 <!-- Main content -->
-<section class="content business-settings-page">
+<section class="content">
 {!! Form::open(['url' => action([\App\Http\Controllers\BusinessController::class, 'postBusinessSettings']), 'method' => 'post', 'id' => 'bussiness_edit_form',
            'files' => true ]) !!}
     <div class="row">
@@ -19,16 +19,9 @@
        <!--  <pos-tab-container> -->
         {{-- <div class="col-xs-12 pos-tab-container"> --}}
         @component('components.widget', ['class' =>  'pos-tab-container'])
-            <div class="business-settings-mobile-nav">
-                <button type="button" class="btn btn-default tw-w-full tw-flex tw-items-center tw-justify-between" id="business_settings_menu_toggle" aria-expanded="false" aria-controls="business_settings_menu">
-                    <span><i class="fa fa-bars tw-mr-2" aria-hidden="true"></i>Menú de secciones</span>
-                    <i class="fa fa-chevron-down" aria-hidden="true"></i>
-                </button>
-                <div class="tw-text-sm tw-font-bold tw-mt-2" id="business_settings_current_section">@lang('business.business')</div>
-            </div>
-            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 pos-tab-menu tw-rounded-lg" id="business_settings_menu">
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 pos-tab-menu tw-rounded-lg">
                 <div class="list-group">
-                    <a href="#" class="list-group-item text-center tw-font-bold tw-text-sm md:tw-text-base active">@lang('business.business')</a>
+                    <a href="#" class="list-group-item text-center tw-font-bold tw-text-sm md:tw-text-base  active">@lang('business.business')</a>
                     <a href="#" class="list-group-item text-center tw-font-bold tw-text-sm md:tw-text-base">@lang('business.tax') @show_tooltip(__('tooltip.business_tax'))</a>
                     <a href="#" class="list-group-item text-center tw-font-bold tw-text-sm md:tw-text-base">@lang('business.product')</a>
                     <a href="#" class="list-group-item text-center tw-font-bold tw-text-sm md:tw-text-base">@lang('contact.contact')</a>
@@ -107,113 +100,6 @@
 </section>
 <!-- /.content -->
 @stop
-@section('css')
-<style>
-    .business-settings-mobile-nav {
-        display: none;
-    }
-
-    @media (max-width: 767px) {
-        .business-settings-mobile-nav {
-            display: block;
-            padding: 8px 8px 0;
-        }
-
-        .business-settings-page .pos-tab-menu {
-            display: none !important;
-        }
-
-        .business-settings-page.settings-menu-open .pos-tab-menu {
-            display: block !important;
-            float: none !important;
-            width: 100% !important;
-            padding: 8px !important;
-        }
-
-        .business-settings-page.settings-menu-open .pos-tab-menu .list-group-item {
-            width: 100%;
-            text-align: left !important;
-        }
-
-        .business-settings-page.settings-menu-open .pos-tab {
-            display: none;
-        }
-
-        .business-settings-page .pos-tab {
-            float: none !important;
-            width: 100% !important;
-            padding: 0 8px !important;
-        }
-
-        .business-settings-page .pos-tab-content {
-            padding: 12px 4px 4px !important;
-        }
-
-        .business-settings-page .sms-settings-row {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            column-gap: 12px;
-            margin-right: 0;
-            margin-left: 0;
-        }
-
-        .business-settings-page .sms-settings-row::before,
-        .business-settings-page .sms-settings-row::after {
-            display: none;
-        }
-
-        .business-settings-page .sms-settings-row > [class*="col-"] {
-            float: none;
-            width: auto;
-            max-width: none;
-            padding-right: 0;
-            padding-left: 0;
-        }
-
-        .business-settings-page .sms-settings-row > .col-xs-3:only-of-type,
-        .business-settings-page .sms-settings-row > .col-xs-12 {
-            grid-column: 1 / -1;
-        }
-
-        .business-settings-page .sms-settings-row > .clearfix {
-            display: none;
-        }
-
-        .business-settings-page .sms-settings-row > hr {
-            grid-column: 1 / -1;
-            width: 100%;
-        }
-
-        .business-settings-page .shipping-custom-field-group {
-            display: block;
-        }
-
-        .business-settings-page .shipping-custom-field-group > .form-control {
-            display: block;
-            float: none;
-            width: 100%;
-            border-radius: 4px 4px 0 0;
-        }
-
-        .business-settings-page .shipping-custom-field-addon {
-            display: flex !important;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 6px;
-            width: 100%;
-            white-space: normal;
-            border-radius: 0 0 4px 4px;
-        }
-
-        .business-settings-page .shipping-custom-field-addon label {
-            display: block;
-            margin: 0;
-            line-height: 1.4;
-        }
-    }
-</style>
-@endsection
-
 @section('javascript')
 <script type="text/javascript">
     __page_leave_confirmation('#bussiness_edit_form');
@@ -228,21 +114,6 @@
     });
 
     $(document).ready(function(){
-        var $settingsTabs = $('.business-settings-page .pos-tab-menu .list-group > a');
-        var $settingsPage = $('.business-settings-page');
-        var $menuToggle = $('#business_settings_menu_toggle');
-        var $currentSection = $('#business_settings_current_section');
-
-        $menuToggle.on('click', function() {
-            var isOpen = $settingsPage.toggleClass('settings-menu-open').hasClass('settings-menu-open');
-            $(this).attr('aria-expanded', isOpen ? 'true' : 'false');
-        });
-
-        $settingsTabs.on('click', function() {
-            $currentSection.text($(this).text().trim());
-            $settingsPage.removeClass('settings-menu-open');
-            $menuToggle.attr('aria-expanded', 'false');
-        });
 
     
         $('#test_email_btn').click( function() {

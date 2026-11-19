@@ -457,6 +457,34 @@
                 }
             });
 
+            $(document).on('click', '#show-in-catalogue-selected, #hide-in-catalogue-selected', function(e) {
+                e.preventDefault();
+                var action = this.id === 'show-in-catalogue-selected' ? 1 : 0;
+                var selected_rows = getSelectedRows();
+
+                if (selected_rows.length > 0) {
+                    var form = $('form#mass_show_catalogue_form');
+                    form.find('#selected_products_catalogue').val(selected_rows);
+                    form.find('#catalog_action').val(action);
+                    $.ajax({
+                        method: form.attr('method'),
+                        url: form.attr('action'),
+                        dataType: 'json',
+                        data: form.serialize(),
+                        success: function(result) {
+                            if (result.success == 1 || result.success == true) {
+                                toastr.success(result.msg);
+                                product_table.ajax.reload();
+                            } else {
+                                toastr.error(result.msg);
+                            }
+                        },
+                    });
+                } else {
+                    swal('@lang('lang_v1.no_row_selected')');
+                }
+            });
+
             $(document).on('click', '#deactivate-selected', function(e) {
                 e.preventDefault();
                 var selected_rows = getSelectedRows();

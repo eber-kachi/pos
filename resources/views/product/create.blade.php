@@ -231,6 +231,18 @@
             </div>
         </div>
 
+        @if(!empty($show_in_catalogue_enabled))
+        <div class="col-sm-4">
+            <div class="form-group">
+                <br>
+                {!! Form::hidden('show_in_catalogue_field', 1) !!}
+                <label>
+                    {!! Form::checkbox('show_in_catalogue', 1, !(empty($duplicate_product)) ? ($duplicate_product->show_in_catalogue ?? true) : true, ['class' => 'input-icheck']); !!} <strong>@lang('lang_v1.show_in_catalogue')</strong>
+                </label> @show_tooltip(__('lang_v1.tooltip_show_in_catalogue'))
+            </div>
+        </div>
+        @endif
+
         <div class="clearfix"></div>
 
         <!-- Rack, Row & position number -->

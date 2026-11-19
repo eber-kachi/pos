@@ -20,17 +20,6 @@
           <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">@lang('receipt.receipt_settings')</a></li>
-
-                {{-- Tabs added by modules (hook: location_settings_tabs) --}}
-                @if(!empty($location_settings_tabs))
-                    @foreach($location_settings_tabs as $module => $tabs)
-                        @foreach($tabs as $tab)
-                            @if(!empty($tab['tab_menu_path']))
-                                @include($tab['tab_menu_path'], !empty($tab['tab_data']) ? $tab['tab_data'] : [])
-                            @endif
-                        @endforeach
-                    @endforeach
-                @endif
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
@@ -126,17 +115,6 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- Tab contents added by modules (hook: location_settings_tabs) --}}
-                @if(!empty($location_settings_tabs))
-                    @foreach($location_settings_tabs as $module => $tabs)
-                        @foreach($tabs as $tab)
-                            @if(!empty($tab['tab_content_path']))
-                                @include($tab['tab_content_path'], !empty($tab['tab_data']) ? $tab['tab_data'] : [])
-                            @endif
-                        @endforeach
-                    @endforeach
-                @endif
             </div>
             <!-- /.tab-content -->
           </div>

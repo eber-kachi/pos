@@ -19,4 +19,7 @@ return [
     'token' => 'El token de recuperación de contraseña es inválido.',
     'user' => 'No podemos encontrar ningún usuario con ese correo electrónico.',
 
+
+    /* --- Traducciones agregadas (claves faltantes respecto a EN) --- */
+    'throttled' => 'Por favor espere antes de reintentar.',
 ];

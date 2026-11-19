@@ -58,7 +58,7 @@
 	@component('components.widget', ['class' => 'box-primary', 'title' => __( 'barcode.info_in_labels' )])
 		<div class="row">
 			<div class="col-md-12">
-				<table class="table table-bordered labels-info-table">
+				<table class="table table-bordered">
 					<tr>
 						<td>
 							<div class="checkbox">
@@ -269,42 +269,6 @@
 </div>
 
 @stop
-@section('css')
-<style>
-	@media (max-width: 767px) {
-		.labels-info-table,
-		.labels-info-table tbody {
-			display: block;
-			width: 100%;
-		}
-
-		.labels-info-table tr {
-			display: grid;
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 8px;
-			margin-bottom: 8px;
-		}
-
-		.labels-info-table td {
-			display: block;
-			width: auto !important;
-			min-width: 0;
-			padding: 8px !important;
-			border: 1px solid #ddd !important;
-			vertical-align: top;
-		}
-
-		.labels-info-table .checkbox label {
-			white-space: normal;
-		}
-
-		.labels-info-table .input-group {
-			width: 100%;
-		}
-	}
-</style>
-@endsection
-
 @section('javascript')
 	<script src="{{ asset('js/labels.js?v=' . $asset_v) }}"></script>
 @endsection

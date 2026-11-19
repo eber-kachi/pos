@@ -70,6 +70,16 @@
                 {!! Form::submit(__('lang_v1.deactivate_selected'), array('class' => 'tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-warning', 'id' => 'deactivate-selected')) !!}
                 {!! Form::close() !!} @show_tooltip(__('lang_v1.deactive_product_tooltip'))
                 &nbsp;
+
+                @if(!empty($show_in_catalogue_enabled))
+                    {!! Form::open(['url' => action([\App\Http\Controllers\ProductController::class, 'massShowInCatalogue']), 'method' => 'post', 'id' => 'mass_show_catalogue_form' ]) !!}
+                    {!! Form::hidden('selected_products', null, ['id' => 'selected_products_catalogue']); !!}
+                    {!! Form::hidden('catalog_action', 1, ['id' => 'catalog_action']); !!}
+                    <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-success" id="show-in-catalogue-selected">@lang('lang_v1.show_in_catalogue_selected')</button>
+                    <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-ghost" id="hide-in-catalogue-selected">@lang('lang_v1.hide_in_catalogue_selected')</button>
+                    {!! Form::close() !!}
+                    &nbsp;
+                @endif
                 @if($is_woocommerce)
                     <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-warning toggle_woocomerce_sync">
                         @lang('lang_v1.woocommerce_sync')

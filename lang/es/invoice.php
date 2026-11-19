@@ -41,7 +41,7 @@
      'show_location_name' => 'Mostrar nombre de ubicación',
      'show_mobile_number' => 'Número de teléfono móvil',
      'show_alternate_number' => 'Número Alternativo',
-     'show_email' => 'Email',
+     'show_email' => 'Correo electrónico',
      'show_tax_1' => 'Detalles de impuestos 1',
      'show_tax_2' => 'Detalles de impuestos 2',
      'fields_to_shown_for_communication' => 'Campos para detalles de comunicación',
@@ -56,4 +56,12 @@
      'show_customer' => 'Mostrar información del cliente',
      'paid_label' => 'Etiqueta de cantidad pagada',
      'customer_label' => 'Etiqueta de cliente',
- ];
+ 
+    /* --- Traducciones agregadas (claves faltantes respecto a EN) --- */
+    'invoice_scheme_for_pos' => 'Esquema de factura para TPV',
+    'invoice_scheme_for_sale' => 'Esquema de factura para venta',
+    'number_type' => 'Tipo de numeración',
+    'sequential' => 'Secuencial',
+    'random' => 'Aleatorio',
+    'number_type_tooltip' => 'Secuencial generará el número en serie como 1,2,3,4 <br/> Aleatorio generará el número al azar',
+];

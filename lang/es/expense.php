@@ -24,4 +24,7 @@
      'expense_for' => 'Gasto por',
      'expense_for_help' => 'Elija el usuario (correo electrónico/nombre de usuario) al que está relacionado el gasto (Opcional)',
     'import_expense' => 'Importar gasto',
- ];
+ 
+    /* --- Traducciones agregadas (claves faltantes respecto a EN) --- */
+    'date_format_instruction' => 'El formato de fecha y hora del gasto debe ser "Y-m-d H:i:s" (2020-07-15 17:45:32)',
+];

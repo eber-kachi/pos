@@ -38,6 +38,8 @@ return [
         'cooked' => 'Cocido',
         'served' => 'Servido',
         '' => 'Recibido',
+        'partial_cooked' => 'Parcialmente cocido',
+        'partial_served' => 'Parcialmente servido',
     ],
     'order_successfully_marked_cooked' => 'Orden marcada exitosamente como cocinada',
     'order_successfully_marked_served' => 'Orden exitosamente marcada como servida',

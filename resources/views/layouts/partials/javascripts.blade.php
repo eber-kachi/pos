@@ -83,6 +83,31 @@
 
     var app_locale = "{{ session()->get('user.language', config('app.locale')) }}";
 
+    // Fija el idioma global de moment.js para TODAS las vistas (fechas relativas, etc.).
+    if (typeof moment !== 'undefined') {
+        moment.locale(app_locale);
+    }
+
+    // El datetimepicker (eonasdan, dentro de vendor.js) congela su locale por defecto
+    // como moment.locale() en el momento de cargarse, cuando aún es inglés.
+    // Por eso el calendario salía en inglés. Aquí envolvemos el plugin para que
+    // TODO datetimepicker de CUALQUIER vista reciba el idioma del usuario automáticamente,
+    // sin tener que editar cada archivo .js. Si una llamada ya trae 'locale', ese prevalece.
+    if (typeof jQuery !== 'undefined' && jQuery.fn && jQuery.fn.datetimepicker) {
+        (function ($) {
+            var _originalDatetimepicker = $.fn.datetimepicker;
+            $.fn.datetimepicker = function (options) {
+                if (typeof options === 'undefined' || $.isPlainObject(options)) {
+                    options = $.extend({ locale: app_locale }, options || {});
+                    return _originalDatetimepicker.call(this, options);
+                }
+                // Llamadas de método como .datetimepicker('show') pasan sin cambios.
+                return _originalDatetimepicker.apply(this, arguments);
+            };
+            $.extend($.fn.datetimepicker, _originalDatetimepicker);
+        })(jQuery);
+    }
+
     var non_utf8_languages = [
         @foreach (config('constants.non_utf8_languages') as $const)
             "{{ $const }}",

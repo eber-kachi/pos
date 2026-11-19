@@ -33,4 +33,10 @@
      'print_detailed' => 'Imprimir Detallado',
     'print_mini' => 'Imprimir Mini',
     'opening' => 'Apertura',
- ];
+ 
+    /* --- Traducciones agregadas (claves faltantes respecto a EN) --- */
+    'name' => 'Nombre',
+    'price' => 'Precio',
+    'activate' => 'Activar',
+    'deactivate' => 'Desactivar',
+];

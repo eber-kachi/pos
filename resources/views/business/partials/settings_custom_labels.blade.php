@@ -308,7 +308,6 @@
                         <input type="checkbox" name="custom_labels[purchase_shipping][is_custom_field_1_required]" value="1" @if(!empty($custom_labels['purchase_shipping']['is_custom_field_1_required']) && $custom_labels['purchase_shipping']['is_custom_field_1_required']==1) checked @endif> @lang('lang_v1.is_required')</labe>
                 </div>
             </div>
-            asd
         </div>
     </div>
     <div class="col-sm-6">
@@ -423,13 +422,13 @@
     <div class="col-sm-12">
         <h4>@lang('lang_v1.labels_for_sale_shipping_custom_fields'):</h4>
     </div>
-    <div class="col-xs-12 col-sm-6">
+    <div class="col-sm-6">
         <div class="form-group">
             {!! Form::label('shipping_custom_field_1_label', __('lang_v1.custom_field', ['number' => 1])) !!}
-            <div class="input-group shipping-custom-field-group">
+            <div class="input-group">
                 {!! Form::text('custom_labels[shipping][custom_field_1]', !empty($custom_labels['shipping']['custom_field_1']) ? $custom_labels['shipping']['custom_field_1'] : null,
                 ['class' => 'form-control', 'id' => 'shipping_custom_field_1_label']); !!}
-                <div class="input-group-addon shipping-custom-field-addon">
+                <div class="input-group-addon">
                     <label>
                         <input type="checkbox" name="custom_labels[shipping][is_custom_field_1_required]" value="1" @if(!empty($custom_labels['shipping']['is_custom_field_1_required']) && $custom_labels['shipping']['is_custom_field_1_required']==1) checked @endif> @lang('lang_v1.is_required')</label>
                     &nbsp;
@@ -443,10 +442,10 @@
     <div class="col-sm-6">
         <div class="form-group">
             {!! Form::label('shipping_custom_field_2_label', __('lang_v1.custom_field', ['number' => 2])) !!}
-            <div class="input-group shipping-custom-field-group">
+            <div class="input-group">
                 {!! Form::text('custom_labels[shipping][custom_field_2]', !empty($custom_labels['shipping']['custom_field_2']) ? $custom_labels['shipping']['custom_field_2'] : null,
                 ['class' => 'form-control', 'id' => 'shipping_custom_field_2_label']); !!}
-                <div class="input-group-addon shipping-custom-field-addon">
+                <div class="input-group-addon">
                     <label>
                         <input type="checkbox" name="custom_labels[shipping][is_custom_field_2_required]" value="1" @if(!empty($custom_labels['shipping']['is_custom_field_2_required']) && $custom_labels['shipping']['is_custom_field_2_required']==1) checked @endif> @lang('lang_v1.is_required')</label>
                     &nbsp;
@@ -460,10 +459,10 @@
     <div class="col-sm-6">
         <div class="form-group">
             {!! Form::label('shipping_custom_field_3_label', __('lang_v1.custom_field', ['number' => 3])) !!}
-            <div class="input-group shipping-custom-field-group">
+            <div class="input-group">
                 {!! Form::text('custom_labels[shipping][custom_field_3]', !empty($custom_labels['shipping']['custom_field_3']) ? $custom_labels['shipping']['custom_field_3'] : null,
                 ['class' => 'form-control', 'id' => 'shipping_custom_field_3_label']); !!}
-                <div class="input-group-addon shipping-custom-field-addon">
+                <div class="input-group-addon">
                     <label>
                         <input type="checkbox" name="custom_labels[shipping][is_custom_field_3_required]" value="1" @if(!empty($custom_labels['shipping']['is_custom_field_3_required']) && $custom_labels['shipping']['is_custom_field_3_required']==1) checked @endif> @lang('lang_v1.is_required')</label>
                     &nbsp;
@@ -477,10 +476,10 @@
     <div class="col-sm-6">
         <div class="form-group">
             {!! Form::label('shipping_custom_field_4_label', __('lang_v1.custom_field', ['number' => 4])) !!}
-            <div class="input-group shipping-custom-field-group">
+            <div class="input-group">
                 {!! Form::text('custom_labels[shipping][custom_field_4]', !empty($custom_labels['shipping']['custom_field_4']) ? $custom_labels['shipping']['custom_field_4'] : null,
                 ['class' => 'form-control', 'id' => 'shipping_custom_field_4_label']); !!}
-                <div class="input-group-addon shipping-custom-field-addon">
+                <div class="input-group-addon">
                     <label>
                         <input type="checkbox" name="custom_labels[shipping][is_custom_field_4_required]" value="1" @if(!empty($custom_labels['shipping']['is_custom_field_4_required']) && $custom_labels['shipping']['is_custom_field_4_required']==1) checked @endif> @lang('lang_v1.is_required')</label>
                     &nbsp;
@@ -494,10 +493,10 @@
     <div class="col-sm-6">
         <div class="form-group">
             {!! Form::label('shipping_custom_field_5_label', __('lang_v1.custom_field', ['number' => 5])) !!}
-            <div class="input-group shipping-custom-field-group">
+            <div class="input-group">
                 {!! Form::text('custom_labels[shipping][custom_field_5]', !empty($custom_labels['shipping']['custom_field_5']) ? $custom_labels['shipping']['custom_field_5'] : null,
                 ['class' => 'form-control', 'id' => 'shipping_custom_field_5_label']); !!}
-                <div class="input-group-addon shipping-custom-field-addon">
+                <div class="input-group-addon">
                     <label>
                         <input type="checkbox" name="custom_labels[shipping][is_custom_field_5_required]" value="1" @if(!empty($custom_labels['shipping']['is_custom_field_5_required']) && $custom_labels['shipping']['is_custom_field_5_required']==1) checked @endif> @lang('lang_v1.is_required')</label>
                     &nbsp;
